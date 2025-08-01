@@ -1,6 +1,9 @@
 import tkinter as tk 
 from tkinter import font as tkfont
 from PIL import Image, ImageTk
+from GPT import GPT
+
+log = ""
 
 class Page1(tk.Frame):
     def __init__(self, parent, controller):
@@ -20,17 +23,74 @@ class Page1(tk.Frame):
 
 class Page2(tk.Frame):
     def __init__(self, parent, controller):
+        global log
         super().__init__(parent)
         self.controller = controller
-        self.canvas = tk.Canvas(self, width=200, height=200)
-        self.canvas.place(x=10, y=50)
 
-        image = Image.open("pic/every_cat_0.jpg")
-        image = image.resize((200, 200), Image.LANCZOS)
-        image = ImageTk.PhotoImage(image)
+        # --- 画像(Canvas)の配置 ---
+        canvas_width = 200
+        canvas_height = 200
+        self.canvas = tk.Canvas(self, width=canvas_width, height=canvas_height)
+        self.canvas.place(x=10, y=10) # 左上の(10, 10)座標に配置
 
-        self.canvas.create_image(0, 0, image=image, anchor=tk.NW)
-        self.canvas.image = image
+        try:
+            image = Image.open("pic/every_cat_0.jpg")
+            image = image.resize((canvas_width, canvas_height), Image.LANCZOS)
+            self.photo_image = ImageTk.PhotoImage(image)
+            self.canvas.create_image(0, 0, image=self.photo_image, anchor=tk.NW)
+        except FileNotFoundError:
+            self.canvas.create_text(canvas_width/2, canvas_height/2, text="画像なし", anchor=tk.CENTER)
+        
+        text_area_x = 220  # テキストエリアの開始X座標
+        text_area_y = 10   # テキストエリアの開始Y座標
+        text_area_width = 360 # テキストエリアの幅（ピクセル）
+        text_area_height = 240 # テキストエリアの高さ（ピクセル）
+        scrollbar_width = 20 # スクロールバーの幅（ピクセル）
+
+        self.text_box = tk.Text(self, wrap=tk.CHAR, font = ("",15)) 
+        self.text_box.place(x=text_area_x, 
+                       y=text_area_y, 
+                       width=text_area_width - scrollbar_width,
+                       height=text_area_height)
+
+        
+        scrollbar = tk.Scrollbar(self, orient=tk.VERTICAL, command=self.text_box.yview)
+        scrollbar.place(x=text_area_x + text_area_width - scrollbar_width, 
+                        y=text_area_y, 
+                        height=text_area_height)
+        
+        self.text_box.config(yscrollcommand=scrollbar.set)
+        long_text = log
+        self.text_box.insert(tk.END, long_text)
+        self.text_box.config(state=tk.DISABLED)
+
+        self.entry = tk.Text(self, width= 40,height = 3, font = ("",15),)
+        self.entry.place(x=self.controller.X_size // 2, 
+                     y=300,anchor="center")
+        
+        btn_send = tk.Button(self, text="send",command=self.get_entry)
+        btn_send.place(x=self.controller.X_size // 2, 
+                        y=int(self.controller.Y_size * 0.88), 
+                        anchor="center")
+        
+    def get_entry(self):
+        global log
+        content = self.entry.get("1.0", tk.END).strip()
+        answer = GPT.ResSimple(content)
+        self.update_text_box(answer)
+        self.entry.delete("1.0", tk.END)
+
+
+    def update_text_box(self, message):
+        # 一時的に編集可能にする
+        self.text_box.config(state=tk.NORMAL)
+        # メッセージを挿入
+        self.text_box.insert(tk.END, message)
+        # 再び編集不可に戻す
+        self.text_box.config(state=tk.DISABLED)
+        # 自動で一番下までスクロールする
+        self.text_box.see(tk.END)
+
 
 
 class CustomFrame(tk.Frame):
