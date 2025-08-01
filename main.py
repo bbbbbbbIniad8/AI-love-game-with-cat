@@ -32,7 +32,10 @@ class CustomFrame:
 if __name__ == "__main__":
     root = tk.Tk()
     root.attributes("-topmost", True)
-    root.title(f"NNBクリッカー")
-    root.geometry("500x300")
+    root.title(f"love_game")
+    WINDOWX,WINDOWY = 600, 400
+    location = {"x":(root.winfo_screenwidth()//2)-(WINDOWX)//2,"y":(root.winfo_screenheight()//2)-(WINDOWY)//2}
+    
+    root.geometry(f'{WINDOWX}x{WINDOWY}+{location["x"]}+{int(location["y"] * 0.95)}')
     frame = CustomFrame(master=root)
     frame.run()
