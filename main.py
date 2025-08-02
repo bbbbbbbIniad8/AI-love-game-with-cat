@@ -2,50 +2,80 @@ import tkinter as tk
 from tkinter import font as tkfont
 from PIL import Image, ImageTk
 from GPT import GPT
+import re
 
 log = ""
+
+prompt2 = """100字以内でユーザーの発言に応じて会話を行え。以下がログである。
+        {log}
+        ===========================================
+        発言内容ともに、感情番号の出力も行え。番号のルールは以下に従う。
+        また、同じ種類の感情でも数字が大きくなると感情の度合いも大きくなる。
+        なるべく、いろんな番号を使え。
+        0:真顔
+        1~3:喜び
+        4~6:怒り
+        7~9:哀しみ
+        10~12:楽しみ
+        19:不気味な笑い(レア)
+        ===========================================
+        出力フォーマット(必ず;をつけろ。)
+        ===========================================
+        1:AIの発言内容;
+        2:感情番号;
+        ===========================================
+        出力例:
+        ===========================================
+        1:おはよう;
+        2:1;
+        ===========================================
+        """
+
+def image_paste(self,path):
+    try:
+        self.image = Image.open(path)
+        self.image = self.image.resize((self.canvas_width, self.canvas_height), Image.LANCZOS)
+        self.photo_image = ImageTk.PhotoImage(self.image)
+        self.canvas.create_image(0, 0, image=self.photo_image, anchor=tk.NW)
+    except FileNotFoundError:
+        self.canvas.create_text(self.canvas_width/2, self.canvas_height/2, text="画像なし", anchor=tk.CENTER)
 
 class Page1(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
+        self.canvas_width, self.canvas_height  = 400,606
+        self.canvas = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height)
+        self.canvas.place(x=0, y=0) 
+        image_paste(self,"pic/Anchor3.png")
+        width_center, height_center = self.controller.X_size // 2, self.controller.Y_size // 2
 
         label_font = ("Yu Gothic", 30, "bold")
-        self.label = tk.Label(self, text="Love Game with Cat", font=label_font)
-        self.label.place(x=self.controller.X_size // 2, 
-                         y=int(self.controller.Y_size // 2 * 0.6), 
+        self.label = tk.Label(self, text="Love\nGame\nwith\nCat", font=label_font)
+        self.label.place(x=width_center + 120, 
+                         y=int(height_center * 0.6), 
                          anchor="center")
 
         btn_start = tk.Button(self, text="Start", command=lambda: controller.show_frame("Page2"))
-        btn_start.place(x=self.controller.X_size // 2, 
-                        y=int(self.controller.Y_size // 2 * 1.4), 
+        btn_start.place(x=width_center + 160, 
+                        y=int(height_center * 1.4), 
                         anchor="center")
 
 class Page2(tk.Frame):
     def __init__(self, parent, controller):
-        global log
         super().__init__(parent)
         self.controller = controller
 
-        # --- 画像(Canvas)の配置 ---
-        canvas_width = 200
-        canvas_height = 200
-        self.canvas = tk.Canvas(self, width=canvas_width, height=canvas_height)
-        self.canvas.place(x=10, y=10) # 左上の(10, 10)座標に配置
-
-        try:
-            image = Image.open("pic/every_cat_0.jpg")
-            image = image.resize((canvas_width, canvas_height), Image.LANCZOS)
-            self.photo_image = ImageTk.PhotoImage(image)
-            self.canvas.create_image(0, 0, image=self.photo_image, anchor=tk.NW)
-        except FileNotFoundError:
-            self.canvas.create_text(canvas_width/2, canvas_height/2, text="画像なし", anchor=tk.CENTER)
+        self.canvas_width, self.canvas_height  = 200, 200
+        self.canvas = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height)
+        self.canvas.place(x=10, y=10)
+        image_paste(self,"pic/every_cat_0.jpg")
         
-        text_area_x = 220  # テキストエリアの開始X座標
-        text_area_y = 10   # テキストエリアの開始Y座標
-        text_area_width = 360 # テキストエリアの幅（ピクセル）
-        text_area_height = 240 # テキストエリアの高さ（ピクセル）
-        scrollbar_width = 20 # スクロールバーの幅（ピクセル）
+        text_area_x = 220
+        text_area_y = 10
+        text_area_width = 360
+        text_area_height = 240
+        scrollbar_width = 20
 
         self.text_box = tk.Text(self, wrap=tk.CHAR, font = ("",15)) 
         self.text_box.place(x=text_area_x, 
@@ -60,46 +90,51 @@ class Page2(tk.Frame):
                         height=text_area_height)
         
         self.text_box.config(yscrollcommand=scrollbar.set)
-        long_text = log
-        self.text_box.insert(tk.END, long_text)
+        self.text_box.insert(tk.END, "every_catが表れた。")
         self.text_box.config(state=tk.DISABLED)
 
-        self.entry = tk.Text(self, width= 40,height = 3, font = ("",15),)
-        self.entry.place(x=self.controller.X_size // 2, 
-                     y=300,anchor="center")
+        self.entry = tk.Text(self, width=40,height=3, font = ("",15),)
+        self.entry.place(x=self.controller.X_size//2, 
+                     y=300, anchor="center")
         
         btn_send = tk.Button(self, text="send",command=self.get_entry)
-        btn_send.place(x=self.controller.X_size // 2, 
-                        y=int(self.controller.Y_size * 0.88), 
+        btn_send.place(x=self.controller.X_size//2, 
+                        y=int(self.controller.Y_size*0.88), 
                         anchor="center")
         
     def get_entry(self):
-        global log
+        global log ,prompt2
+        prompt = ""
+        with open("prompt.txt", mode = "r",encoding="utf-8") as f:
+            prompt = f.read()
+        every_cat = GPT(1.0, prompt)
+        
         content = self.entry.get("1.0", tk.END).strip()
-        answer = GPT.ResSimple(content)
-        self.update_text_box(answer)
+        log += content + "\n\n"
+        answer = every_cat.Res(prompt2.format(log = log))
+        print(answer)
+        deta = re.findall(r"(\n|^)\d:(.*?);",answer)
+
+        answer = deta[0][1]
+        num = int(deta[1][1])
+
+        log += answer + f"\n感情番号{num}\n\n"
+        self.update_text_box(answer, num)
         self.entry.delete("1.0", tk.END)
 
-
-    def update_text_box(self, message):
-        # 一時的に編集可能にする
+    def update_text_box(self, message, number):
         self.text_box.config(state=tk.NORMAL)
-        # メッセージを挿入
+        self.text_box.delete("1.0", tk.END)
+        image_paste(self,f"pic/every_cat_{number}.jpg")
         self.text_box.insert(tk.END, message)
-        # 再び編集不可に戻す
         self.text_box.config(state=tk.DISABLED)
-        # 自動で一番下までスクロールする
         self.text_box.see(tk.END)
-
 
 
 class CustomFrame(tk.Frame):
     def __init__(self, X, Y, master=None):
         super().__init__(master) 
-        self.X_size = X
-        self.Y_size = Y
-        
-
+        self.X_size, self.Y_size = X, Y
         self.frames = {}
 
         container = tk.Frame(self)
