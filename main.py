@@ -6,11 +6,19 @@ import re
 
 log = ""
 
-prompt2 = """100字以内でユーザーの発言に応じて会話を行え。以下がログである。
+prompt2 = """
+        これはテキストベースの恋愛シュミレーションゲームです。
+        あなたはユーザーからのセリフに対して一つずつ返信し、好感度を更新してください。
+        好感度の最大値は100です。
         {log}
         ===========================================
         発言内容ともに、感情番号の出力も行え。番号のルールは以下に従う。
         また、同じ種類の感情でも数字が大きくなると感情の度合いも大きくなる。
+        好感度は、ユーザーへの好感度が向上するたびに上昇(一度に10~30上昇)
+        変動率は平均値が10です。every_catがユーザーに対して行動や言葉に対して感じる愛情の度合いに応じて、スコアを徐々に増加させてください。
+        (いやがらせ等を行えば好感度の値は減少する。(一度に10~　現象))。100になると必ず告白が成功する。
+        初期好感度は0です。
+
         なるべく、いろんな番号を使え。
         0:真顔
         1~3:喜び
@@ -23,11 +31,13 @@ prompt2 = """100字以内でユーザーの発言に応じて会話を行え。�
         ===========================================
         1:AIの発言内容;
         2:感情番号;
+        3:AIへの好感度;
         ===========================================
         出力例:
         ===========================================
         1:おはよう;
         2:1;
+        3:10;
         ===========================================
         """
 
@@ -39,6 +49,21 @@ def image_paste(self,path):
         self.canvas.create_image(0, 0, image=self.photo_image, anchor=tk.NW)
     except FileNotFoundError:
         self.canvas.create_text(self.canvas_width/2, self.canvas_height/2, text="画像なし", anchor=tk.CENTER)
+
+def alart(self, msg):         
+        master = self
+        # self.controller.attributes("-topmost", True)
+        self.confirm_window = tk.Toplevel(master) 
+        
+        WINDOWX,WINDOWY = 250,76
+        location = {"x":(master.winfo_screenwidth()//2)-(WINDOWX)//2,"y":(master.winfo_screenheight()//2)-(WINDOWY)//2}
+        self.confirm_window.geometry(f'{WINDOWX}x{WINDOWY}+{location["x"]}+{location["y"]}')
+        self.confirm_window.title(f"メッセージ")
+        label5 =  tk.Label(self.confirm_window, text=f"{msg}")
+        btn4 = tk.Button(self.confirm_window, text="OK", command= lambda:self.confirm_window.destroy())
+        label5.pack()
+        btn4.pack()
+        
 
 class Page1(tk.Frame):
     def __init__(self, parent, controller):
@@ -71,8 +96,7 @@ class Page2(tk.Frame):
         self.canvas.place(x=10, y=10)
         image_paste(self,"pic/every_cat_0.jpg")
         
-        text_area_x = 220
-        text_area_y = 10
+        text_area_x, text_area_y = 220, 10
         text_area_width = 360
         text_area_height = 240
         scrollbar_width = 20
@@ -110,17 +134,19 @@ class Page2(tk.Frame):
         every_cat = GPT(1.0, prompt)
         
         content = self.entry.get("1.0", tk.END).strip()
-        log += content + "\n\n"
+        log += f"ユーザー:{content}\n\n"
         answer = every_cat.Res(prompt2.format(log = log))
         print(answer)
         deta = re.findall(r"(\n|^)\d:(.*?);",answer)
 
-        answer = deta[0][1]
+        answer = f"every_cat:{deta[0][1]}"
         num = int(deta[1][1])
 
         log += answer + f"\n感情番号{num}\n\n"
         self.update_text_box(answer, num)
         self.entry.delete("1.0", tk.END)
+
+        alart(self, "test")
 
     def update_text_box(self, message, number):
         self.text_box.config(state=tk.NORMAL)
@@ -154,10 +180,11 @@ class CustomFrame(tk.Frame):
         frame = self.frames[page_name]
         frame.tkraise()
 
+    
+
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.attributes("-topmost", True)
     root.title("love_game")
     
     WINDOWX, WINDOWY = 600, 400
