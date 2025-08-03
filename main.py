@@ -52,7 +52,6 @@ def image_paste(self,path):
 
 def alart(self, msg):         
         master = self
-        # self.controller.attributes("-topmost", True)
         self.confirm_window = tk.Toplevel(master) 
         
         WINDOWX,WINDOWY = 250,76
@@ -91,13 +90,13 @@ class Page2(tk.Frame):
         super().__init__(parent)
         self.controller = controller
 
-        self.canvas_width, self.canvas_height  = 200, 200
+        self.canvas_width, self.canvas_height  = 250, 250
         self.canvas = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height)
         self.canvas.place(x=10, y=10)
         image_paste(self,"pic/every_cat_0.jpg")
         
-        text_area_x, text_area_y = 220, 10
-        text_area_width = 360
+        text_area_x, text_area_y = 270, 10
+        text_area_width = 330
         text_area_height = 240
         scrollbar_width = 20
 
@@ -137,16 +136,18 @@ class Page2(tk.Frame):
         log += f"ユーザー:{content}\n\n"
         answer = every_cat.Res(prompt2.format(log = log))
         print(answer)
-        deta = re.findall(r"(\n|^)\d:(.*?);",answer)
-
-        answer = f"every_cat:{deta[0][1]}"
-        num = int(deta[1][1])
+        try:
+            deta = re.findall(r"(\n|^)\d:(.*?);",answer)
+            answer = f"every_cat:{deta[0][1]}"
+            num = int(deta[1][1])
+        except IndexError:
+            alart(self, "エラーが発生しました。\nもう一度やり直してください")
+            return 0
 
         log += answer + f"\n感情番号{num}\n\n"
         self.update_text_box(answer, num)
         self.entry.delete("1.0", tk.END)
-
-        alart(self, "test")
+        return 1
 
     def update_text_box(self, message, number):
         self.text_box.config(state=tk.NORMAL)
@@ -180,16 +181,13 @@ class CustomFrame(tk.Frame):
         frame = self.frames[page_name]
         frame.tkraise()
 
-    
-
 
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("love_game")
     
     WINDOWX, WINDOWY = 600, 400
-    screen_width = root.winfo_screenwidth()
-    screen_height = root.winfo_screenheight()
+    screen_width, screen_height = root.winfo_screenwidth(), root.winfo_screenheight()
     location = {"x": (screen_width // 2) - (WINDOWX // 2), 
                 "y": (screen_height // 2) - (WINDOWY // 2)}
     
