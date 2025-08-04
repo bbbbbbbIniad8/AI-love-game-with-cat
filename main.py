@@ -140,6 +140,10 @@ class Page2(tk.Frame):
             deta = re.findall(r"(\n|^)\d:(.*?);",answer)
             answer = f"every_cat:{deta[0][1]}"
             num = int(deta[1][1])
+
+            if int(deta[2][1]) >= 100:
+                alart(self, "ゲームクリア")
+
         except IndexError:
             alart(self, "エラーが発生しました。\nもう一度やり直してください")
             return 0
