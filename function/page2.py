@@ -8,13 +8,11 @@ class Page2(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-
-        self.log = ""
-        self.love = 0
-        self.turn = 8
         with open("prompt.txt", mode = "r",encoding="utf-8") as f:
            self.game_prompt = f.read()
-        self.every_cat = GPT(1.0, self.game_prompt)
+
+        self.clear()
+        
         self.AIname = "アリフレ・タネコ"
         self.label_msg = "残りターン:{turn}\n現在の好感度:{love_num}"
 
@@ -24,8 +22,7 @@ class Page2(tk.Frame):
         image_paste(self,"pic/every_cat_0.jpg")
         
         text_area_x, text_area_y = 270, 10
-        text_area_width = 330
-        text_area_height = 250
+        text_area_width, text_area_height = 330, 250
         scrollbar_width = 20
 
         self.text_box = tk.Text(self, wrap=tk.CHAR, font = ("",15)) 
@@ -71,8 +68,8 @@ class Page2(tk.Frame):
 
 
     def get_entry(self):
-        self.entry.config(state=tk.DISABLED) 
         endnum, content = self.get_content(self.entry.get("1.0", tk.END))
+        self.entry.config(state=tk.DISABLED) 
         if endnum == 0:
             self.entry.config(state=tk.NORMAL)
             return 0
@@ -82,21 +79,27 @@ class Page2(tk.Frame):
         except openai.PermissionDeniedError:
             alart(self,"回答の生成に失敗しました。\n再起動して正しいAPIキーを入力し直してください。")
 
-        print(answer)
         try:
             answer, face_num, love_num =  self.answer_processing(answer)
-            if int(love_num) >= 100:
-                alart(self, "ゲームクリア")
+            
         except IndexError:
             alart(self, "エラーが発生しました。\nもう一度やり直してください")
             return 0
 
-        print(love_num)
         self.log += f"self.AIname :{answer}\n感情番号{face_num}\n\n"
+        self.turn -= 1
         self.update_text_box(answer, face_num)
-        self.entry.delete("1.0", tk.END)
         self.entry.config(state=tk.NORMAL)
+        self.entry.delete("1.0", tk.END)
+        
+
+        if love_num >= 100:
+            alart(self, "ゲームクリア")
+        elif love_num < 100 and self.turn <= 0:
+             alart(self, "ゲームオーバー")
+
         return 1
+    
 
     def update_text_box(self, message, number):
         self.text_box.config(state=tk.NORMAL)
@@ -130,8 +133,8 @@ class Page2(tk.Frame):
         self.love = 0
         self.turn = 8
         self.every_cat = GPT(1.0, self.game_prompt)
-        self.update_text_box("初期化", 0)
         try:
+            self.update_text_box("初期化", 0)
             self.btn_end.forget()
         except:
             None
