@@ -109,18 +109,26 @@ def image_paste(self,path):
     except FileNotFoundError:
         self.canvas.create_text(self.canvas_width/2, self.canvas_height/2, text="画像なし", anchor=tk.CENTER)
 
+def alart_end(self):
+        self.btn_send["state"] = 'normal'
+        self.entry["state"] = 'normal'
+        self.confirm_window.destroy()
+
 def alart(self, msg):         
         master = self
         self.confirm_window = tk.Toplevel(master) 
+        self.confirm_window.grab_set()
         
         WINDOWX,WINDOWY = 250,76
         location = {"x":(master.winfo_screenwidth()//2)-(WINDOWX)//2,"y":(master.winfo_screenheight()//2)-(WINDOWY)//2}
         self.confirm_window.geometry(f'{WINDOWX}x{WINDOWY}+{location["x"]}+{location["y"]}')
         self.confirm_window.title(f"メッセージ")
         label5 =  tk.Label(self.confirm_window, text=f"{msg}")
-        btn4 = tk.Button(self.confirm_window, text="OK", command= lambda:self.confirm_window.destroy())
+        btn4 = tk.Button(self.confirm_window, text="OK", command=lambda: alart_end(self))
         label5.pack()
         btn4.pack()
+
+        self.confirm_window.focus_set()
         
 
 class Page1(tk.Frame):
@@ -179,19 +187,24 @@ class Page2(tk.Frame):
         self.entry.place(x=self.controller.X_size//2, 
                      y=300, anchor="center")
         
-        btn_send = tk.Button(self, text="send",command=self.get_entry)
-        btn_send.place(x=self.controller.X_size//2, 
+        self.btn_send = tk.Button(self, text="send",command=self.get_entry)
+        self.btn_send.place(x=self.controller.X_size//2, 
                         y=int(self.controller.Y_size*0.88), 
                         anchor="center")
         
     def get_entry(self):
         global log ,prompt2,love
+        
+        self.entry.config(state=tk.DISABLED)
         prompt = ""
         with open("prompt.txt", mode = "r",encoding="utf-8") as f:
             prompt = f.read()
         every_cat = GPT(1.0, prompt)
         
         content = self.entry.get("1.0", tk.END).strip()
+        if content == "":
+            self.entry.config(state=tk.NORMAL)
+            return 0
         log += f"ユーザー:{content}\n\n"
         answer = every_cat.Res(prompt2.format(log = log, name = "アリフレ・タネコ",love = love))
         print(answer)
@@ -206,12 +219,14 @@ class Page2(tk.Frame):
 
         except IndexError:
             alart(self, "エラーが発生しました。\nもう一度やり直してください")
+            
             return 0
 
         print(love)
         log += answer + f"\n感情番号{num}\n\n"
         self.update_text_box(answer, num)
         self.entry.delete("1.0", tk.END)
+        self.entry.config(state=tk.NORMAL)
         return 1
 
     def update_text_box(self, message, number):
