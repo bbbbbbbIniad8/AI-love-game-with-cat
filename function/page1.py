@@ -34,6 +34,7 @@ class Page1(tk.Frame):
                          anchor="center")
         
         try:
+            load_dotenv('.env')
             self.entry.insert(0, os.getenv('APIKEY'))
             self.APIlabel["text"] = "APIキー保存済み"
         except:

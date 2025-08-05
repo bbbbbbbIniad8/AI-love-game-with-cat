@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 
 
-
 class GPT:
     def __init__(self,temperature,prompt):
         self.Temperature = temperature
@@ -12,7 +11,7 @@ class GPT:
 
     def Res(self, question):
         try:
-            load_dotenv('.env')
+            load_dotenv('.env', override=True)
             client = openai.OpenAI(
                 api_key= os.getenv('APIKEY'),
                 base_url="https://api.openai.iniad.org/api/v1"

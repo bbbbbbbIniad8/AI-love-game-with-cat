@@ -3,7 +3,7 @@ from function.GPT import GPT
 from function.game_prompt import game_prompt
 from function.other import image_paste, alart
 import re
-
+import openai
 class Page2(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -82,7 +82,11 @@ class Page2(tk.Frame):
             self.entry.config(state=tk.NORMAL)
             return 0
         self.log += f"ユーザー:{content}\n\n"
-        answer = self.every_cat.Res(game_prompt(self.AIname, self.love, self.log))
+        try:
+            answer = self.every_cat.Res(game_prompt(self.AIname, self.love, self.log))
+        except openai.PermissionDeniedError:
+            alart(self,"回答の生成に失敗しました。\n再起動して正しいAPIキーを入力し直してください。")
+
         print(answer)
         try:
             answer, face_num, love_num =  self.answer_processing(answer)
