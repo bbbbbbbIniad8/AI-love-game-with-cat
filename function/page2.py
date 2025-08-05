@@ -73,9 +73,8 @@ class Page2(tk.Frame):
         self.btn_send.place(x=self.controller.X_size//6 * 5, 
                         y=int(self.controller.Y_size*0.88), 
                         anchor="center")
-        
-        
-        
+
+
     def get_entry(self):
         self.entry.config(state=tk.DISABLED) 
         endnum, content = self.get_content(self.entry.get("1.0", tk.END))

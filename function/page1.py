@@ -1,5 +1,7 @@
 import tkinter as tk
-from function.other import image_paste
+from function.other import image_paste, alart
+from dotenv import load_dotenv
+import os
 
 class Page1(tk.Frame):
     def __init__(self, parent, controller):
@@ -30,8 +32,14 @@ class Page1(tk.Frame):
         self.entry.place(x=width_center + 120, 
                          y=int(height_center * 1.1), 
                          anchor="center")
+        
+        try:
+            self.entry.insert(0, os.getenv('APIKEY'))
+            self.APIlabel["text"] = "APIキー保存済み"
+        except:
+            None
         ## API保存ボタン
-        self.btn_save = tk.Button(self, text="save", command=lambda: controller.show_frame("Page2"))
+        self.btn_save = tk.Button(self, text="save", command=lambda: self.API_save(self.entry.get()) )
         self.btn_save.place(x=width_center + 235, 
                         y=int(height_center * 1.1), 
                         anchor="center")
@@ -41,3 +49,10 @@ class Page1(tk.Frame):
         btn_start.place(x=width_center + 120, 
                         y=int(height_center * 1.4), 
                         anchor="center")
+        
+    def API_save(self, content):
+        s = "APIKEY={key}"
+        with open(".env", mode = "w", encoding="utf-8") as f:
+            f.write(s.format(key = content))
+        alart(self, "保存に成功しました。")
+        self.APIlabel["text"] = "APIキー保存済み"

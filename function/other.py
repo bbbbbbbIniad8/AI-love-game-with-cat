@@ -12,8 +12,11 @@ def image_paste(self,path):
         self.canvas.create_text(self.canvas_width/2, self.canvas_height/2, text="画像なし", anchor=tk.CENTER)
 
 def alart_end(self):
-        self.btn_send["state"] = 'normal'
-        self.entry["state"] = 'normal'
+        try:
+            self.btn_send["state"] = 'normal'
+            self.entry["state"] = 'normal'
+        except:
+            None
         self.confirm_window.destroy()
 
 def alart(self, msg):         
