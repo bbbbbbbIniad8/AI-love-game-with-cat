@@ -51,15 +51,10 @@ class Page2(tk.Frame):
                          y=self.controller.Y_size//4 * 3 - 10, 
                          anchor="center")
         
-        ## エンディングボタン
-        self.btn_send = tk.Button(self, text="ending", command=self.get_entry, width=18, height=2)
-        self.btn_send.place(x=self.controller.X_size // 5 * 3, 
-                        y=self.controller.Y_size//4 * 3 - 10, 
-                        anchor="center")
         
         ## リスタートボタン
-        self.btn_send = tk.Button(self, text="restart", command=self.get_entry, width=5, height=2)
-        self.btn_send.place(x=self.controller.X_size // 6 * 5, 
+        self.btn_restart = tk.Button(self, text="restart", command=self.clear, width=5, height=2)
+        self.btn_restart.place(x=self.controller.X_size // 6 * 5, 
                         y=self.controller.Y_size//4 * 3 - 10, 
                         anchor="center")
 
@@ -122,3 +117,21 @@ class Page2(tk.Frame):
     def get_content(self,target):
         content = target.strip()
         return (1 if content != "" else 0), content
+    
+    def button_on(self):
+        ## エンディングボタン
+        self.btn_end = tk.Button(self, text="ending", command=self.get_entry, width=18, height=2)
+        self.btn_end.place(x=self.controller.X_size // 5 * 3, 
+                        y=self.controller.Y_size//4 * 3 - 10, 
+                        anchor="center")
+        
+    def clear(self):
+        self.log = ""
+        self.love = 0
+        self.turn = 8
+        self.every_cat = GPT(1.0, self.game_prompt)
+        self.update_text_box("初期化", 0)
+        try:
+            self.btn_end.forget()
+        except:
+            None
