@@ -9,14 +9,23 @@ class Page2(tk.Frame):
         super().__init__(parent)
         self.controller = controller
 
-        self.canvas_width, self.canvas_height  = 250, 250
+        self.log = ""
+        self.love = 0
+        self.turn = 8
+        with open("prompt.txt", mode = "r",encoding="utf-8") as f:
+           self.game_prompt = f.read()
+        self.every_cat = GPT(1.0, self.game_prompt)
+        self.AIname = "アリフレ・タネコ"
+        self.label_msg = "残りターン:{turn}\n現在の好感度:{love_num}"
+
+        self.canvas_width, self.canvas_height = 250, 250
         self.canvas = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height)
         self.canvas.place(x=10, y=10)
         image_paste(self,"pic/every_cat_0.jpg")
         
         text_area_x, text_area_y = 270, 10
         text_area_width = 330
-        text_area_height = 240
+        text_area_height = 250
         scrollbar_width = 20
 
         self.text_box = tk.Text(self, wrap=tk.CHAR, font = ("",15)) 
@@ -25,7 +34,7 @@ class Page2(tk.Frame):
                        width=text_area_width - scrollbar_width,
                        height=text_area_height)
 
-        
+        ## メッセージボックス
         scrollbar = tk.Scrollbar(self, orient=tk.VERTICAL, command=self.text_box.yview)
         scrollbar.place(x=text_area_x + text_area_width - scrollbar_width, 
                         y=text_area_y, 
@@ -35,20 +44,37 @@ class Page2(tk.Frame):
         self.text_box.insert(tk.END, "every_catが表れた。")
         self.text_box.config(state=tk.DISABLED)
 
-        self.entry = tk.Text(self, width=40,height=3, font = ("",15),)
-        self.entry.place(x=self.controller.X_size//2, 
-                     y=300, anchor="center")
+        ## 好感度
+        label_font = ("Yu Gothic", 15, "bold")
+        self.label = tk.Label(self, text= self.label_msg.format(love_num=self.love, turn=self.turn), font=label_font)
+        self.label.place(x=self.controller.X_size // 4 * 1, 
+                         y=self.controller.Y_size//4 * 3 - 10, 
+                         anchor="center")
         
-        self.btn_send = tk.Button(self, text="send",command=self.get_entry)
-        self.btn_send.place(x=self.controller.X_size//2, 
+        ## エンディングボタン
+        self.btn_send = tk.Button(self, text="ending", command=self.get_entry, width=18, height=2)
+        self.btn_send.place(x=self.controller.X_size // 5 * 3, 
+                        y=self.controller.Y_size//4 * 3 - 10, 
+                        anchor="center")
+        
+        ## リスタートボタン
+        self.btn_send = tk.Button(self, text="restart", command=self.get_entry, width=5, height=2)
+        self.btn_send.place(x=self.controller.X_size // 6 * 5, 
+                        y=self.controller.Y_size//4 * 3 - 10, 
+                        anchor="center")
+
+        ## 入力ボックス
+        self.entry = tk.Text(self, width=40,height=3, font = ("",15),)
+        self.entry.place(x=self.controller.X_size//3 + 50, 
+                     y=350, anchor="center")
+        
+        ## 送信ボタン
+        self.btn_send = tk.Button(self, text="send", command=self.get_entry, width=10, height=4)
+        self.btn_send.place(x=self.controller.X_size//6 * 5, 
                         y=int(self.controller.Y_size*0.88), 
                         anchor="center")
-        self.log = ""
-        self.love = 0
-        with open("prompt.txt", mode = "r",encoding="utf-8") as f:
-           self.game_prompt = f.read()
-        self.every_cat = GPT(1.0, self.game_prompt)
-        self.AIname = "アリフレ・タネコ"
+        
+        
         
     def get_entry(self):
         self.entry.config(state=tk.DISABLED) 
@@ -81,6 +107,7 @@ class Page2(tk.Frame):
         self.text_box.insert(tk.END, message)
         self.text_box.config(state=tk.DISABLED)
         self.text_box.see(tk.END)
+        self.label["text"] = self.label_msg.format(love_num=self.love, turn=self.turn)
 
     def answer_processing(self, answer):
         deta = re.findall(r"(\n|^)\d:(.*?);",answer)
