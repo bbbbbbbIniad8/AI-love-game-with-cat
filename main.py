@@ -4,8 +4,6 @@ from funciton.game_prompt import game_prompt
 from funciton.other import image_paste, alart
 import re
 
-log = ""
-love = 0
 
 class Page1(tk.Frame):
     def __init__(self, parent, controller):
@@ -67,39 +65,33 @@ class Page2(tk.Frame):
         self.btn_send.place(x=self.controller.X_size//2, 
                         y=int(self.controller.Y_size*0.88), 
                         anchor="center")
+        self.log = ""
+        self.love = 0
+        with open("prompt.txt", mode = "r",encoding="utf-8") as f:
+           self.game_prompt = f.read()
+        self.every_cat = GPT(1.0, self.game_prompt)
+        self.AIname = "アリフレ・タネコ"
         
     def get_entry(self):
-        global log, love
-        
-        self.entry.config(state=tk.DISABLED)
-        prompt = ""
-        with open("prompt.txt", mode = "r",encoding="utf-8") as f:
-            prompt = f.read()
-        every_cat = GPT(1.0, prompt)
-        
-        content = self.entry.get("1.0", tk.END).strip()
-        if content == "":
+        self.entry.config(state=tk.DISABLED) 
+        endnum, content = self.get_content(self.entry.get("1.0", tk.END))
+        if endnum == 0:
             self.entry.config(state=tk.NORMAL)
             return 0
-        log += f"ユーザー:{content}\n\n"
-        answer = every_cat.Res(game_prompt("アリフレ・タネコ", love, log))
+        self.log += f"ユーザー:{content}\n\n"
+        answer = self.every_cat.Res(game_prompt(self.AIname, self.love, self.log))
         print(answer)
         try:
-            deta = re.findall(r"(\n|^)\d:(.*?);",answer)
-            answer = f"every_cat:{deta[0][1]}"
-            num = int(deta[1][1])
-            love += int(deta[2][1])
-
-            if int(love) >= 100:
+            answer, face_num, love_num =  self.answer_processing(answer)
+            if int(love_num) >= 100:
                 alart(self, "ゲームクリア")
-
         except IndexError:
             alart(self, "エラーが発生しました。\nもう一度やり直してください")
             return 0
 
-        print(love)
-        log += answer + f"\n感情番号{num}\n\n"
-        self.update_text_box(answer, num)
+        print(love_num)
+        self.log += f"self.AIname :{answer}\n感情番号{face_num}\n\n"
+        self.update_text_box(answer, face_num)
         self.entry.delete("1.0", tk.END)
         self.entry.config(state=tk.NORMAL)
         return 1
@@ -111,6 +103,17 @@ class Page2(tk.Frame):
         self.text_box.insert(tk.END, message)
         self.text_box.config(state=tk.DISABLED)
         self.text_box.see(tk.END)
+
+    def answer_processing(self, answer):
+        deta = re.findall(r"(\n|^)\d:(.*?);",answer)
+        answer = f"every_cat:{deta[0][1]}"
+        num = int(deta[1][1])
+        self.love += int(deta[2][1])
+        return answer, num, self.love
+
+    def get_content(self,target):
+        content = target.strip()
+        return (1 if content != "" else 0), content
 
 
 class CustomFrame(tk.Frame):
