@@ -3,14 +3,15 @@ from function.other import image_paste, alart
 from dotenv import load_dotenv
 import os
 
+
 class Page1(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-        self.canvas_width, self.canvas_height  = 400,606
+        self.canvas_width, self.canvas_height = 400, 606
         self.canvas = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height)
         self.canvas.place(x=0, y=0) 
-        image_paste(self,"pic/Anchor3.png")
+        image_paste(self, "pic/Anchor3.png")
         width_center, height_center = self.controller.X_size // 2, self.controller.Y_size // 2
 
         ## ラベル
@@ -39,6 +40,7 @@ class Page1(tk.Frame):
             self.APIlabel["text"] = "APIキー保存済み"
         except:
             None
+
         ## API保存ボタン
         self.btn_save = tk.Button(self, text="save", command=lambda: self.API_save(self.entry.get()) )
         self.btn_save.place(x=width_center + 235, 
@@ -50,10 +52,10 @@ class Page1(tk.Frame):
         btn_start.place(x=width_center + 120, 
                         y=int(height_center * 1.4), 
                         anchor="center")
-        
+
     def API_save(self, content):
         s = "APIKEY={key}"
-        with open(".env", mode = "w", encoding="utf-8") as f:
-            f.write(s.format(key = content))
+        with open(".env", mode="w", encoding="utf-8") as f:
+            f.write(s.format(key=content))
         alart(self, "保存に成功しました。")
         self.APIlabel["text"] = "APIキー保存済み"

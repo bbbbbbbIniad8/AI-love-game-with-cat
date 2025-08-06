@@ -4,6 +4,8 @@ from function.game_prompt import game_prompt
 from function.other import image_paste, alart
 import re
 import openai
+
+
 class Page2(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -20,12 +22,12 @@ class Page2(tk.Frame):
         self.canvas = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height)
         self.canvas.place(x=10, y=10)
         image_paste(self,"pic/every_cat_0.jpg")
-        
+
         text_area_x, text_area_y = 270, 10
         text_area_width, text_area_height = 330, 250
         scrollbar_width = 20
 
-        self.text_box = tk.Text(self, wrap=tk.CHAR, font = ("",15)) 
+        self.text_box = tk.Text(self, wrap=tk.CHAR, font=("",15)) 
         self.text_box.place(x=text_area_x, 
                        y=text_area_y, 
                        width=text_area_width - scrollbar_width,
@@ -47,7 +49,6 @@ class Page2(tk.Frame):
         self.label.place(x=self.controller.X_size // 4 * 1, 
                          y=self.controller.Y_size//4 * 3 - 10, 
                          anchor="center")
-        
         
         ## リスタートボタン
         self.btn_restart = tk.Button(self, text="restart", command=self.clear, width=5, height=2)
@@ -92,7 +93,6 @@ class Page2(tk.Frame):
         self.entry.config(state=tk.NORMAL)
         self.entry.delete("1.0", tk.END)
         
-
         if love_num >= 100:
             alart(self, "ゲームクリア")
         elif love_num < 100 and self.turn <= 0:
@@ -104,11 +104,12 @@ class Page2(tk.Frame):
     def update_text_box(self, message, number):
         self.text_box.config(state=tk.NORMAL)
         self.text_box.delete("1.0", tk.END)
-        image_paste(self,f"pic/every_cat_{number}.jpg")
+        image_paste(self, f"pic/every_cat_{number}.jpg")
         self.text_box.insert(tk.END, message)
         self.text_box.config(state=tk.DISABLED)
         self.text_box.see(tk.END)
         self.label["text"] = self.label_msg.format(love_num=self.love, turn=self.turn)
+
 
     def answer_processing(self, answer):
         deta = re.findall(r"(\n|^)\d:(.*?);",answer)
@@ -117,10 +118,12 @@ class Page2(tk.Frame):
         self.love += int(deta[2][1])
         return answer, num, self.love
 
-    def get_content(self,target):
+
+    def get_content(self, target):
         content = target.strip()
         return (1 if content != "" else 0), content
-    
+
+
     def button_on(self):
         ## エンディングボタン
         self.btn_end = tk.Button(self, text="ending", command=self.get_entry, width=18, height=2)

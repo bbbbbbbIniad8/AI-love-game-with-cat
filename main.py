@@ -1,6 +1,7 @@
-import tkinter as tk 
+import tkinter as tk
 from function.page1 import Page1
 from function.page2 import Page2
+
 
 class CustomFrame(tk.Frame):
     def __init__(self, X, Y, master=None):
@@ -29,15 +30,13 @@ class CustomFrame(tk.Frame):
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("LOVE_game")
-    
+
     WINDOWX, WINDOWY = 600, 400
     screen_width, screen_height = root.winfo_screenwidth(), root.winfo_screenheight()
     location = {"x": (screen_width // 2) - (WINDOWX // 2), 
                 "y": (screen_height // 2) - (WINDOWY // 2)}
-    
+
     root.geometry(f'{WINDOWX}x{WINDOWY}+{location["x"]}+{int(location["y"] * 0.95)}')
-    
     frame = CustomFrame(X=WINDOWX, Y=WINDOWY, master=root)
     frame.pack(fill=tk.BOTH, expand=True)
-    
     root.mainloop()
