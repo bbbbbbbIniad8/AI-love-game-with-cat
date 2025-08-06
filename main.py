@@ -8,6 +8,7 @@ class CustomFrame(tk.Frame):
         super().__init__(master)
         self.X_size, self.Y_size = X, Y
         self.frames = {}
+        self.master = master
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)

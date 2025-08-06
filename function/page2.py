@@ -4,6 +4,7 @@ from function.game_prompt import game_prompt
 from function.other import image_paste, alart, ending
 import re
 import openai
+import random
 
 
 class Page2(tk.Frame):
@@ -68,6 +69,7 @@ class Page2(tk.Frame):
                             anchor="center")
 
     def get_entry(self):
+        self.controller.master.title("Run away") if random.random() <= 0.01 else None
         endnum, content = self.get_content(self.entry.get("1.0", tk.END))
         self.entry.config(state=tk.DISABLED)
         if endnum == 0:
@@ -97,6 +99,7 @@ class Page2(tk.Frame):
             self.button_on(0)
             self.btn_send.config(state=tk.DISABLED)
         elif love_num < 100 and self.turn <= 0:
+            image_paste(self, f"pic/every_cat_6.jpg")
             self.button_on(1)
             self.btn_send.config(state=tk.DISABLED)
 
@@ -130,14 +133,15 @@ class Page2(tk.Frame):
                            anchor="center")
 
     def clear(self):
+        print("restart")
         self.log = ""
         self.love = 0
         self.turn = 8
         self.finishgame = False
         self.every_cat = GPT(1.0, self.game_prompt)
         try:
-            self.btn_end.destroy()
             self.update_text_box("初期化", 0)
             self.btn_send.config(state=tk.NORMAL)
+            self.btn_end.destroy()
         except:
             None
