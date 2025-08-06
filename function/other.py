@@ -29,7 +29,7 @@ def alart(self, msg):
     WINDOWX, WINDOWY = 250, 76
     location = {"x": (master.winfo_screenwidth()//2)-(WINDOWX)//2, "y": (master.winfo_screenheight()//2)-(WINDOWY)//2}
     self.confirm_window.geometry(f'{WINDOWX}x{WINDOWY}+{location["x"]}+{location["y"]}')
-    self.confirm_window.title(f"メッセージ")
+    self.confirm_window.title("メッセージ")
     label5 = tk.Label(self.confirm_window, text=msg)
     btn4 = tk.Button(self.confirm_window, text="OK", command=lambda: alart_end(self))
     label5.pack()

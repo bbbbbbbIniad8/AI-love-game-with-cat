@@ -27,13 +27,13 @@ class Page1(tk.Frame):
         self.APIlabel.place(x=width_center + 120,
                             y=int(height_center * 1.0),
                             anchor="center")
-        
+
         # API入力ボックス
         self.entry = tk.Entry(self, width=30)
         self.entry.place(x=width_center + 120,
                          y=int(height_center * 1.1),
                          anchor="center")
-        
+
         try:
             load_dotenv('.env')
             self.entry.insert(0, os.getenv('APIKEY'))
@@ -42,10 +42,10 @@ class Page1(tk.Frame):
             None
 
         # API保存ボタン
-        self.btn_save = tk.Button(self, text="save", command=lambda: self.API_save(self.entry.get()) )
+        self.btn_save = tk.Button(self, text="save", command=lambda: self.API_save(self.entry.get()))
         self.btn_save.place(x=width_center + 235,
-                        y=int(height_center * 1.1),
-                        anchor="center")
+                            y=int(height_center * 1.1),
+                            anchor="center")
 
         # 開始ボタン
         btn_start = tk.Button(self, text="Start", command=lambda: controller.show_frame("Page2"), width=10, height=3)
