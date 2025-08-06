@@ -18,7 +18,7 @@ class Page1(tk.Frame):
 
         # ラベル
         label_font = ("Yu Gothic", 30, "bold")
-        self.label = tk.Label(self, text="AI猫とお喋りする\nゲーム", font=label_font)
+        self.label = tk.Label(self, text="AI猫とのお喋り\nゲーム", font=label_font)
         self.label.place(x=width_center + 140,
                          y=int(height_center * 0.6),
                          anchor="center")
