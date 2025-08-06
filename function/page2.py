@@ -52,14 +52,14 @@ class Page2(tk.Frame):
 
         # リスタートボタン
         self.btn_restart = tk.Button(self, text="restart", command=self.clear, width=5, height=2)
-        self.btn_restart.place( x=self.controller.X_size // 6 * 5,
-                                y=self.controller.Y_size // 4 * 3 - 10,
-                                anchor="center")
+        self.btn_restart.place(x=self.controller.X_size // 6 * 5,
+                               y=self.controller.Y_size // 4 * 3 - 10,
+                               anchor="center")
 
         # 入力ボックス
-        self.entry = tk.Text(self, width=40, height=3, font=("",15),)
-        self.entry.place(   x=self.controller.X_size // 3 + 50,
-                            y=350, anchor="center")
+        self.entry = tk.Text(self, width=40, height=3, font=("",15))
+        self.entry.place(x=self.controller.X_size // 3 + 50,
+                         y=350, anchor="center")
 
         # 送信ボタン
         self.btn_send = tk.Button(self, text="send", command=self.get_entry, width=10, height=4)
@@ -91,7 +91,7 @@ class Page2(tk.Frame):
         self.update_text_box(answer, face_num)
         self.entry.config(state=tk.NORMAL)
         self.entry.delete("1.0", tk.END)
-        
+
         if love_num >= 100:
             alart(self, "ゲームクリア")
         elif love_num < 100 and self.turn <= 0:
@@ -122,9 +122,9 @@ class Page2(tk.Frame):
     def button_on(self):
         # エンディングボタン
         self.btn_end = tk.Button(self, text="ending", command=self.get_entry, width=18, height=2)
-        self.btn_end.place(x=self.controller.X_size // 5 * 3, 
-                        y=self.controller.Y_size//4 * 3 - 10, 
-                        anchor="center")        
+        self.btn_end.place(x=self.controller.X_size // 5 * 3,
+                           y=self.controller.Y_size // 4 * 3 - 10,
+                           anchor="center")
 
     def clear(self):
         self.log = ""
