@@ -28,7 +28,6 @@ def alart(self, msg):
     btn = tk.Button(self.confirm_window, text="OK", command=lambda: alart_end(self))
     label.pack()
     btn.pack()
-
     self.confirm_window.focus_set()
 
 
@@ -45,16 +44,31 @@ def ending(self, end_code):
     canvas_X, canvas_Y = 300, 150
     canvas = tk.Canvas(self.confirm_window, width=canvas_X, height=canvas_Y)
     canvas.place(x=window_X // 2, y=window_Y // 3 + 10, anchor="center")
-    canvas.create_rectangle(0, 0, canvas_X, canvas_Y, fill="black")
-    canvas.create_text(canvas_X // 2, canvas_Y // 2, text="You died", fill="red", font=("", 32))
 
-    label = tk.Label(self.confirm_window, text="GAMEOVER", font=("", 20))
+    if end_code == 1:
+        endmsg1 = "GAMEOVER"
+        endmsg2 = "あなたは奴の'コレクション'に加えられた"
+        back_color = "black"
+        canvasmsg_color = "red"
+        canvasmsg = "You died"
+    else:
+        endmsg1 = "GAMECLEAR"
+        endmsg2 = "あなたは生き延びた?"
+        canvasmsg_color = "blue"
+        r, g, b = 255, 255, 220
+        back_color = f'#{r:02x}{g:02x}{b:02x}'
+        canvasmsg = "You survived"
+
+    canvas.create_rectangle(0, 0, canvas_X, canvas_Y, fill=back_color)
+    canvas.create_text(canvas_X // 2, canvas_Y // 2, text=canvasmsg, fill=canvasmsg_color, font=("", 32))
+
+    label = tk.Label(self.confirm_window, text=endmsg1, font=("", 20))
     label.place(x=window_X // 2,
                 y=window_Y // 4 * 3 - 15, anchor="center")
 
-    label2 = tk.Label(self.confirm_window, text="あなたは奴の'コレクション'に加えられた。", font=("", 12))
+    label2 = tk.Label(self.confirm_window, text=endmsg2, font=("", 12))
     label2.place(x=window_X // 2,
-                 y=window_Y // 4 * 3 + 15, anchor="center")
+                y=window_Y // 4 * 3 + 15, anchor="center")
 
     btn = tk.Button(self.confirm_window, text="OK", command=lambda: alart_end(self))
     btn.place(x=window_X // 2,

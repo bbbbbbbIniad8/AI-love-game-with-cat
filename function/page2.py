@@ -81,7 +81,6 @@ class Page2(tk.Frame):
 
         try:
             answer, face_num, love_num = self.answer_processing(answer)
-
         except IndexError:
             alart(self, "エラーが発生しました。\nもう一度やり直してください")
             self.btn_send["state"] = 'normal'
@@ -95,9 +94,10 @@ class Page2(tk.Frame):
         self.entry.delete("1.0", tk.END)
 
         if love_num >= 100:
-            alart(self, "ゲームクリア")
+            self.button_on(0)
+            self.btn_send.config(state=tk.DISABLED)
         elif love_num < 100 and self.turn <= 0:
-            self.button_on()
+            self.button_on(1)
             self.btn_send.config(state=tk.DISABLED)
 
         return 1
@@ -122,9 +122,9 @@ class Page2(tk.Frame):
         content = target.strip()
         return (1 if content != "" else 0), content
 
-    def button_on(self):
+    def button_on(self, end_code):
         # エンディングボタン
-        self.btn_end = tk.Button(self, text="ending", command= lambda: ending(self, "test"), width=18, height=2)
+        self.btn_end = tk.Button(self, text="ending", command= lambda: ending(self, end_code), width=18, height=2)
         self.btn_end.place(x=self.controller.X_size // 5 * 3,
                            y=self.controller.Y_size // 4 * 3 - 10,
                            anchor="center")
@@ -132,7 +132,7 @@ class Page2(tk.Frame):
     def clear(self):
         self.log = ""
         self.love = 0
-        self.turn = 1
+        self.turn = 8
         self.finishgame = False
         self.every_cat = GPT(1.0, self.game_prompt)
         try:
