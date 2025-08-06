@@ -11,13 +11,15 @@ class Page1(tk.Frame):
         self.canvas_width, self.canvas_height = 400, 606
         self.canvas = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height)
         self.canvas.place(x=0, y=0)
-        image_paste(self, "pic/Anchor3.png")
+        self.key = False
+        self.controller = controller
+        image_paste(self, "pic/Anchor.png")
         width_center, height_center = self.controller.X_size // 2, self.controller.Y_size // 2
 
         # ラベル
         label_font = ("Yu Gothic", 30, "bold")
-        self.label = tk.Label(self, text="AI猫を口説く\nゲーム", font=label_font)
-        self.label.place(x=width_center + 120,
+        self.label = tk.Label(self, text="AI猫とお喋りする\nゲーム", font=label_font)
+        self.label.place(x=width_center + 140,
                          y=int(height_center * 0.6),
                          anchor="center")
 
@@ -38,6 +40,7 @@ class Page1(tk.Frame):
             load_dotenv('.env')
             self.entry.insert(0, os.getenv('APIKEY'))
             self.APIlabel["text"] = "APIキー保存済み"
+            self.key = True
         except:
             None
 
@@ -48,7 +51,7 @@ class Page1(tk.Frame):
                             anchor="center")
 
         # 開始ボタン
-        btn_start = tk.Button(self, text="Start", command=lambda: controller.show_frame("Page2"), width=10, height=3)
+        btn_start = tk.Button(self, text="Start", command=self.start, width=10, height=3)
         btn_start.place(x=width_center + 120,
                         y=int(height_center * 1.4),
                         anchor="center")
@@ -59,3 +62,10 @@ class Page1(tk.Frame):
             f.write(s.format(key=content))
         alart(self, "保存に成功しました。")
         self.APIlabel["text"] = "APIキー保存済み"
+        self.key = True
+
+    def start(self):
+        if self.key == False:
+            alart(self, "APIキーを入力してください。")
+        else:
+            self.controller.show_frame("Page2")

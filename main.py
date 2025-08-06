@@ -30,7 +30,7 @@ class CustomFrame(tk.Frame):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.title("LOVE_game")
+    root.title("TALK_game")
 
     WINDOWX, WINDOWY = 600, 400
     screen_width, screen_height = root.winfo_screenwidth(), root.winfo_screenheight()

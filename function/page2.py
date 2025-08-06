@@ -15,9 +15,11 @@ class Page2(tk.Frame):
                   self.game_prompt = f.read()
 
         self.clear()
+        self.firstentry = "ここにあなたのセリフ・行動を入力"
 
         self.AIname = "アリフレ・タネコ"
         self.label_msg = "残りターン:{turn}\n現在の好感度:{love_num}"
+        self.first_msg = "【ゲームルール】\nあなたはどういうわけか左の画像の猫と二人きりです。制限時間内に猫の好感度を100以上にしないとあなたは死にます。お喋りして好感度を上げて生き延びてください。"
 
         self.canvas_width, self.canvas_height = 250, 250
         self.canvas = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height)
@@ -41,7 +43,7 @@ class Page2(tk.Frame):
                         height=text_area_height)
 
         self.text_box.config(yscrollcommand=scrollbar.set)
-        self.text_box.insert(tk.END, "every_catが表れた。")
+        self.text_box.insert(tk.END, self.first_msg)
         self.text_box.config(state=tk.DISABLED)
 
         # 好感度
@@ -62,6 +64,8 @@ class Page2(tk.Frame):
         self.entry.place(x=self.controller.X_size // 3 + 50,
                          y=350, anchor="center")
 
+        self.entry.insert(tk.END, self.firstentry)
+
         # 送信ボタン
         self.btn_send = tk.Button(self, text="send", command=self.get_entry, width=10, height=4)
         self.btn_send.place(x=self.controller.X_size // 6 * 5,
@@ -72,14 +76,14 @@ class Page2(tk.Frame):
         self.controller.master.title("Run away") if random.random() <= 0.01 else None
         endnum, content = self.get_content(self.entry.get("1.0", tk.END))
         self.entry.config(state=tk.DISABLED)
-        if endnum == 0:
+        if endnum == 0  or content == self.firstentry:
             self.entry.config(state=tk.NORMAL)
             return 0
         self.log += f"ユーザー:{content}\n\n"
         try:
             answer = self.every_cat.Res(game_prompt(self.AIname, self.love, self.log))
         except openai.PermissionDeniedError:
-            alart(self, "回答の生成に失敗しました。\n再起動して正しいAPIキーを入力し直してください。")
+            alart(self, "回答の生成に失敗しました。")
 
         try:
             answer, face_num, love_num = self.answer_processing(answer)
@@ -116,7 +120,7 @@ class Page2(tk.Frame):
 
     def answer_processing(self, answer):
         deta = re.findall(r"(\n|^)\d:(.*?);", answer)
-        answer = f"every_cat:{deta[0][1]}"
+        answer = f"{deta[0][1]}"
         num = int(deta[1][1])
         self.love += int(deta[2][1])
         return answer, num, self.love
@@ -127,21 +131,22 @@ class Page2(tk.Frame):
 
     def button_on(self, end_code):
         # エンディングボタン
-        self.btn_end = tk.Button(self, text="ending", command= lambda: ending(self, end_code), width=18, height=2)
+        self.btn_end = tk.Button(self, text="ending", command= lambda: ending(self, end_code),
+                                 width=18, height=2, bg="#f9ffc0", fg="#FF5512", font=("", 14))
         self.btn_end.place(x=self.controller.X_size // 5 * 3,
                            y=self.controller.Y_size // 4 * 3 - 10,
                            anchor="center")
 
     def clear(self):
-        print("restart")
         self.log = ""
         self.love = 0
         self.turn = 8
         self.finishgame = False
         self.every_cat = GPT(1.0, self.game_prompt)
         try:
-            self.update_text_box("初期化", 0)
+            self.update_text_box(self.first_msg, 0)
             self.btn_send.config(state=tk.NORMAL)
+            self.entry.insert(tk.END, self.firstentry)
             self.btn_end.destroy()
         except:
             None

@@ -47,7 +47,7 @@ def ending(self, end_code):
 
     if end_code == 1:
         endmsg1 = "GAMEOVER"
-        endmsg2 = "あなたは奴の'コレクション'に加えられた"
+        endmsg2 = "あなたの臓器は奴の'コレクション'に加えられた"
         back_color = "black"
         canvasmsg_color = "red"
         canvasmsg = "You died"
