@@ -1,7 +1,7 @@
 import tkinter as tk
 from function.GPT import GPT
 from function.game_prompt import game_prompt
-from function.other import image_paste, alart
+from function.other import image_paste, alart, ending
 import re
 import openai
 
@@ -11,7 +11,7 @@ class Page2(tk.Frame):
         super().__init__(parent)
         self.controller = controller
         with open("prompt.txt", mode="r", encoding="utf-8") as f:
-           self.game_prompt = f.read()
+                  self.game_prompt = f.read()
 
         self.clear()
 
@@ -57,7 +57,7 @@ class Page2(tk.Frame):
                                anchor="center")
 
         # 入力ボックス
-        self.entry = tk.Text(self, width=40, height=3, font=("",15))
+        self.entry = tk.Text(self, width=40, height=3, font=("", 15))
         self.entry.place(x=self.controller.X_size // 3 + 50,
                          y=350, anchor="center")
 
@@ -84,6 +84,8 @@ class Page2(tk.Frame):
 
         except IndexError:
             alart(self, "エラーが発生しました。\nもう一度やり直してください")
+            self.btn_send["state"] = 'normal'
+            self.entry["state"] = 'normal'
             return 0
 
         self.log += f"self.AIname :{answer}\n感情番号{face_num}\n\n"
@@ -95,7 +97,8 @@ class Page2(tk.Frame):
         if love_num >= 100:
             alart(self, "ゲームクリア")
         elif love_num < 100 and self.turn <= 0:
-            alart(self, "ゲームオーバー")
+            self.button_on()
+            self.btn_send.config(state=tk.DISABLED)
 
         return 1
 
@@ -121,7 +124,7 @@ class Page2(tk.Frame):
 
     def button_on(self):
         # エンディングボタン
-        self.btn_end = tk.Button(self, text="ending", command=self.get_entry, width=18, height=2)
+        self.btn_end = tk.Button(self, text="ending", command= lambda: ending(self, "test"), width=18, height=2)
         self.btn_end.place(x=self.controller.X_size // 5 * 3,
                            y=self.controller.Y_size // 4 * 3 - 10,
                            anchor="center")
@@ -129,10 +132,12 @@ class Page2(tk.Frame):
     def clear(self):
         self.log = ""
         self.love = 0
-        self.turn = 8
+        self.turn = 1
+        self.finishgame = False
         self.every_cat = GPT(1.0, self.game_prompt)
         try:
+            self.btn_end.destroy()
             self.update_text_box("初期化", 0)
-            self.btn_end.forget()
+            self.btn_send.config(state=tk.NORMAL)
         except:
             None
