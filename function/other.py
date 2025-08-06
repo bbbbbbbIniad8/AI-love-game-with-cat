@@ -1,5 +1,5 @@
 from PIL import Image, ImageTk
-import tkinter as tk 
+import tkinter as tk
 
 
 def image_paste(self, path):
@@ -24,14 +24,13 @@ def alart_end(self):
 
 def alart(self, msg):
     master = self
-    self.confirm_window = tk.Toplevel(master) 
+    self.confirm_window = tk.Toplevel(master)
     self.confirm_window.grab_set()
-    
-    WINDOWX,WINDOWY = 250,76
+    WINDOWX, WINDOWY = 250, 76
     location = {"x": (master.winfo_screenwidth()//2)-(WINDOWX)//2, "y": (master.winfo_screenheight()//2)-(WINDOWY)//2}
     self.confirm_window.geometry(f'{WINDOWX}x{WINDOWY}+{location["x"]}+{location["y"]}')
     self.confirm_window.title(f"メッセージ")
-    label5 = tk.Label(self.confirm_window, text=f"{msg}")
+    label5 = tk.Label(self.confirm_window, text=msg)
     btn4 = tk.Button(self.confirm_window, text="OK", command=lambda: alart_end(self))
     label5.pack()
     btn4.pack()

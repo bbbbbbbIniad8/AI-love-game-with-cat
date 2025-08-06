@@ -11,7 +11,7 @@ class GPT:
     def Res(self, question):
         try:
             load_dotenv('.env', override=True)
-            client=openai.OpenAI(
+            client = openai.OpenAI(
                 api_key=os.getenv('APIKEY'),
                 base_url="https://api.openai.iniad.org/api/v1"
             )
@@ -23,7 +23,7 @@ class GPT:
             temperature=self.Temperature,
             messages=[
                 {"role": "system", "content": f"{self.Prompt}"},
-                {'role':'user', 'content': question},
+                {'role': 'user', 'content': question},
             ]
         )
 
